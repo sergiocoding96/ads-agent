@@ -12,6 +12,7 @@
 **Goal:** Setup infrastructure, database, and basic agent framework
 
 ### Repository & Infrastructure
+
 - [ ] Initialize Next.js 14 project with TypeScript
 - [ ] Setup pnpm workspace
 - [ ] Configure ESLint + Prettier
@@ -23,6 +24,7 @@
 - [ ] Configure GitHub Actions for CI/CD
 
 ### Database Setup
+
 - [ ] Initialize Supabase project
 - [ ] Create all database tables (see schema in spec)
 - [ ] Setup database indexes
@@ -33,6 +35,7 @@
 - [ ] Test RLS policies with different user contexts
 
 ### Authentication
+
 - [ ] Implement Supabase Auth integration
 - [ ] Create login/signup pages
 - [ ] Setup protected route middleware
@@ -42,6 +45,7 @@
 - [ ] Test auth flow end-to-end
 
 ### Base Agent Framework
+
 - [ ] Create `BaseAgent` class
 - [ ] Implement `Tool` interface
 - [ ] Setup Anthropic API client
@@ -51,6 +55,7 @@
 - [ ] Write unit tests for BaseAgent
 
 ### API Integrations - Meta
+
 - [ ] Create Meta Marketing API client
 - [ ] Implement OAuth flow for Meta
 - [ ] Test campaign creation
@@ -62,6 +67,7 @@
 - [ ] Write integration tests
 
 **Acceptance Criteria:**
+
 - [ ] All infrastructure is setup and working
 - [ ] Database is created with all tables
 - [ ] User can sign up and login
@@ -75,12 +81,14 @@
 **Goal:** Build the Campaign Execution Agent that can create and manage campaigns
 
 ### Agent Implementation
+
 - [ ] Create Campaign Execution Agent class
 - [ ] Write comprehensive system prompt
 - [ ] Implement execute() method
 - [ ] Create buildPrompt() helper
 
 ### Tools Development
+
 - [ ] Implement `create_campaign` tool
 - [ ] Implement `create_ad_set` tool
 - [ ] Implement `create_ad` tool
@@ -92,6 +100,7 @@
 - [ ] Implement `request_approval` tool
 
 ### Safety Mechanisms
+
 - [ ] Add hard daily spend caps
 - [ ] Implement auto-pause logic (spend with 0 conversions)
 - [ ] Create budget change approval workflow
@@ -100,6 +109,7 @@
 - [ ] Create audit log for all financial operations
 
 ### Testing
+
 - [ ] Unit tests for each tool
 - [ ] Integration tests for campaign creation flow
 - [ ] Test safety mechanisms (spend caps, auto-pause)
@@ -107,6 +117,7 @@
 - [ ] Manual testing with test ad account (€100 budget)
 
 **Acceptance Criteria:**
+
 - [ ] Agent can create full campaign structure
 - [ ] Safety limits prevent overspend
 - [ ] All tools working reliably
@@ -120,12 +131,14 @@
 **Goal:** Build agent that generates Veo 3/Sora 2 prompts and ad copy
 
 ### Agent Implementation
+
 - [ ] Create Creative Agent class
 - [ ] Write system prompt focused on video generation
 - [ ] Implement execute() method
 - [ ] Create self-validation logic (score concepts)
 
 ### Tools Development
+
 - [ ] Implement `get_market_insights` tool
 - [ ] Implement `get_performance_learnings` tool
 - [ ] Implement `get_brand_guidelines` tool
@@ -135,6 +148,7 @@
 - [ ] Implement `save_creative_concept` tool
 
 ### Creative Templates
+
 - [ ] Create prompt templates for different video styles
   - [ ] UGC (user-generated content) style
   - [ ] Product demo style
@@ -145,6 +159,7 @@
 - [ ] Create hook variations library
 
 ### UI Components
+
 - [ ] Create Creative Concepts page
 - [ ] Build concept card component
 - [ ] Add concept generation form
@@ -153,6 +168,7 @@
 - [ ] Create concept library with filters
 
 ### Testing
+
 - [ ] Unit tests for creative generation
 - [ ] Test self-validation scoring
 - [ ] Test different video styles
@@ -160,6 +176,7 @@
 - [ ] User acceptance testing with Sergio/Arinze
 
 **Acceptance Criteria:**
+
 - [ ] Agent generates high-quality Veo/Sora prompts
 - [ ] Self-validation works (concepts score 8+)
 - [ ] UI allows easy concept management
@@ -173,12 +190,14 @@
 **Goal:** Build agent that analyzes performance and designs A/B tests
 
 ### Agent Implementation
+
 - [ ] Create Performance & Testing Agent class
 - [ ] Write analytical system prompt
 - [ ] Implement execute() method with analysis modes
 - [ ] Create test design logic
 
 ### Tools Development
+
 - [ ] Implement `get_campaign_performance` tool
 - [ ] Implement `get_historical_benchmarks` tool
 - [ ] Implement `calculate_metrics` tool (CPA, ROAS, etc.)
@@ -189,6 +208,7 @@
 - [ ] Implement `save_learning` tool
 
 ### Learning Database
+
 - [ ] Setup pgvector for semantic search
 - [ ] Create learning storage logic
 - [ ] Implement learning retrieval (by category, tags)
@@ -196,6 +216,7 @@
 - [ ] Add learning validation (prove with data)
 
 ### Analytics Implementation
+
 - [ ] Statistical significance calculator
 - [ ] Trend analysis algorithms
 - [ ] Anomaly detection logic
@@ -203,6 +224,7 @@
 - [ ] A/B test design templates
 
 ### UI Components
+
 - [ ] Create Insights page
 - [ ] Build performance dashboard
 - [ ] Add learning library view
@@ -210,6 +232,7 @@
 - [ ] Add test results visualization
 
 ### Testing
+
 - [ ] Unit tests for analysis functions
 - [ ] Test statistical calculations accuracy
 - [ ] Test anomaly detection with edge cases
@@ -217,6 +240,7 @@
 - [ ] Validate A/B test designs with domain expert
 
 **Acceptance Criteria:**
+
 - [ ] Agent accurately analyzes campaign performance
 - [ ] Learning database captures patterns
 - [ ] A/B test designs are statistically sound
@@ -230,6 +254,7 @@
 **Goal:** Build agent that scrapes competitors and identifies trends
 
 ### Scraping Infrastructure
+
 - [ ] Setup Scrapfly account and API key
 - [ ] Create Scrapfly client wrapper
 - [ ] Implement proxy rotation
@@ -238,12 +263,14 @@
 - [ ] Create scraping error recovery
 
 ### Agent Implementation
+
 - [ ] Create Market Intelligence Agent class
 - [ ] Write system prompt for competitive analysis
 - [ ] Implement execute() method with research modes
 - [ ] Create insight extraction logic
 
 ### Tools Development
+
 - [ ] Implement `scrape_meta_ad_library` tool
 - [ ] Implement `scrape_tiktok_ads` tool
 - [ ] Implement `transcribe_video` tool (OpenAI Whisper)
@@ -252,6 +279,7 @@
 - [ ] Implement `save_market_insight` tool
 
 ### HTML Parsing
+
 - [ ] Create Meta Ad Library HTML parser
 - [ ] Extract ad metadata (advertiser, dates, etc.)
 - [ ] Extract video URLs
@@ -260,6 +288,7 @@
 - [ ] Test with various search terms
 
 ### Computer Vision Analysis
+
 - [ ] Integrate Claude Vision API
 - [ ] Create visual analysis prompts
 - [ ] Extract: composition, colors, text overlays
@@ -267,6 +296,7 @@
 - [ ] Generate visual pattern insights
 
 ### UI Components
+
 - [ ] Create Market Intelligence page
 - [ ] Build competitor ad gallery
 - [ ] Add trend visualization
@@ -274,6 +304,7 @@
 - [ ] Add search and filter functionality
 
 ### Testing
+
 - [ ] Unit tests for parsing functions
 - [ ] Test scraping with various categories
 - [ ] Test rate limiting and backoff
@@ -281,6 +312,7 @@
 - [ ] Integration tests for full research flow
 
 **Acceptance Criteria:**
+
 - [ ] Successfully scrapes Meta Ad Library
 - [ ] Transcribes video ads accurately
 - [ ] Analyzes visual patterns effectively
@@ -295,6 +327,7 @@
 **Goal:** Connect all agents and implement multi-agent workflows
 
 ### Orchestrator Implementation
+
 - [ ] Create Orchestrator Agent class
 - [ ] Implement agent initialization
 - [ ] Create workflow routing logic
@@ -302,6 +335,7 @@
 - [ ] Add workflow error recovery
 
 ### Multi-Agent Workflows
+
 - [ ] Implement `launchNewProductCampaign` workflow
   - [ ] Market research
   - [ ] Performance analysis (similar products)
@@ -321,6 +355,7 @@
   - [ ] Generate insights report
 
 ### Approval System
+
 - [ ] Create approval records in database
 - [ ] Implement approval UI components
 - [ ] Add Slack notifications for approvals
@@ -329,6 +364,7 @@
 - [ ] Test approval workflow end-to-end
 
 ### Background Jobs
+
 - [ ] Setup Vercel Cron jobs
 - [ ] Implement daily optimization cron
 - [ ] Implement performance sync cron (every 6 hours)
@@ -337,6 +373,7 @@
 - [ ] Test cron execution
 
 ### Testing
+
 - [ ] Unit tests for orchestrator logic
 - [ ] Integration tests for each workflow
 - [ ] Test workflow error recovery
@@ -344,6 +381,7 @@
 - [ ] Manual end-to-end testing
 
 **Acceptance Criteria:**
+
 - [ ] All agents work together seamlessly
 - [ ] Workflows complete successfully
 - [ ] Approval system functions properly
@@ -357,6 +395,7 @@
 **Goal:** Create production-ready user interface
 
 ### Dashboard Pages
+
 - [ ] Build main Dashboard page
   - [ ] Active campaigns overview
   - [ ] Performance summary cards
@@ -389,6 +428,7 @@
   - [ ] API keys (read-only view)
 
 ### Components Library
+
 - [ ] Build reusable UI components
   - [ ] CampaignCard
   - [ ] PerformanceChart
@@ -402,6 +442,7 @@
 - [ ] Implement optimistic updates
 
 ### Real-time Features
+
 - [ ] Setup Supabase real-time subscriptions
 - [ ] Live campaign status updates
 - [ ] Live performance metrics
@@ -409,6 +450,7 @@
 - [ ] Live activity feed
 
 ### Polish & UX
+
 - [ ] Add smooth page transitions
 - [ ] Implement toast notifications
 - [ ] Add keyboard shortcuts
@@ -420,6 +462,7 @@
 - [ ] Add dark mode support (optional)
 
 ### Testing
+
 - [ ] Component unit tests
 - [ ] Page integration tests
 - [ ] E2E tests for critical flows
@@ -428,6 +471,7 @@
 - [ ] Mobile responsiveness testing
 
 **Acceptance Criteria:**
+
 - [ ] All pages functional and polished
 - [ ] UI is intuitive and user-friendly
 - [ ] Real-time updates working
@@ -442,6 +486,7 @@
 **Goal:** Prepare system for production deployment
 
 ### Security Audit
+
 - [ ] Review all API endpoints for auth
 - [ ] Verify RLS policies on all tables
 - [ ] Audit input validation
@@ -452,6 +497,7 @@
 - [ ] Check CORS configuration
 
 ### Performance Optimization
+
 - [ ] Database query optimization
 - [ ] Add missing indexes
 - [ ] Implement caching where appropriate
@@ -462,6 +508,7 @@
 - [ ] Optimize largest contentful paint (LCP)
 
 ### Monitoring & Logging
+
 - [ ] Setup Sentry for error tracking
 - [ ] Configure Vercel Analytics
 - [ ] Add custom logging for agents
@@ -472,6 +519,7 @@
 - [ ] Create alerting rules
 
 ### Documentation
+
 - [ ] Write deployment guide
 - [ ] Document environment variables
 - [ ] Create API documentation
@@ -482,6 +530,7 @@
 - [ ] Write incident response plan
 
 ### Deployment
+
 - [ ] Setup production Vercel project
 - [ ] Configure production environment variables
 - [ ] Setup production Supabase project
@@ -493,6 +542,7 @@
 - [ ] Fix any production issues
 
 ### Final Testing
+
 - [ ] Full system test with production data
 - [ ] Test all agent workflows
 - [ ] Verify all integrations working
@@ -502,6 +552,7 @@
 - [ ] Security penetration test (optional)
 
 **Acceptance Criteria:**
+
 - [ ] System deployed to production
 - [ ] No critical bugs
 - [ ] Performance meets targets
@@ -516,6 +567,7 @@
 **Goal:** Test with real campaigns and real money
 
 ### Test Campaign 1 (€500 budget)
+
 - [ ] Select test product
 - [ ] Generate creative concepts
 - [ ] Launch campaign with agent
@@ -525,6 +577,7 @@
 - [ ] Fix any issues found
 
 ### Test Campaign 2 (€1000 budget)
+
 - [ ] Select different product/category
 - [ ] Use learnings from Campaign 1
 - [ ] Launch with A/B test
@@ -534,6 +587,7 @@
 - [ ] Document results
 
 ### System Validation
+
 - [ ] Verify budget limits working
 - [ ] Confirm auto-optimizations effective
 - [ ] Validate creative quality
@@ -543,6 +597,7 @@
 - [ ] Measure time saved vs manual
 
 ### Iteration
+
 - [ ] Fix any bugs discovered
 - [ ] Improve agent prompts based on results
 - [ ] Optimize workflows
@@ -550,6 +605,7 @@
 - [ ] Update documentation
 
 **Acceptance Criteria:**
+
 - [ ] Successfully managed €1500+ in ad spend
 - [ ] Positive ROAS achieved
 - [ ] No budget overruns
@@ -562,6 +618,7 @@
 ## Future Enhancements (Post-Launch)
 
 ### TikTok Integration
+
 - [ ] Implement TikTok Ads API client
 - [ ] Add TikTok to Campaign Execution Agent
 - [ ] Update Creative Agent for TikTok formats
@@ -569,6 +626,7 @@
 - [ ] Update UI for multi-platform
 
 ### Video Generation (When APIs Available)
+
 - [ ] Integrate Veo 3 API
 - [ ] Integrate Sora 2 API
 - [ ] Add video generation to workflow
@@ -577,6 +635,7 @@
 - [ ] Create video quality validation
 
 ### Advanced Features
+
 - [ ] Predictive budget forecasting
 - [ ] Automated audience discovery
 - [ ] Cross-platform campaign optimization
@@ -593,21 +652,26 @@
 Use this for weekly sprints:
 
 ### Sprint X (Week Y)
+
 **Goal:** [Sprint goal]
 
 **Tasks:**
+
 - [ ] Task 1
 - [ ] Task 2
 - [ ] Task 3
 
 **Blockers:**
+
 - None / [List blockers]
 
 **Completed:**
-- [X] Task from last sprint
-- [X] Another completed task
+
+- [x] Task from last sprint
+- [x] Another completed task
 
 **Notes:**
+
 - [Any important notes]
 
 ---
@@ -616,19 +680,20 @@ Use this for weekly sprints:
 
 **Overall Progress:** X% (based on phases completed)
 
-| Phase | Status | Start Date | End Date | Notes |
-|-------|--------|------------|----------|-------|
-| 1 - Foundation | Not Started | - | - | - |
-| 2 - Campaign Agent | Not Started | - | - | - |
-| 3 - Creative Agent | Not Started | - | - | - |
-| 4 - Performance Agent | Not Started | - | - | - |
-| 5 - Market Intel | Not Started | - | - | - |
-| 6 - Orchestrator | Not Started | - | - | - |
-| 7 - Dashboard | Not Started | - | - | - |
-| 8 - Production Ready | Not Started | - | - | - |
-| 9 - Real-World Testing | Not Started | - | - | - |
+| Phase                  | Status      | Start Date | End Date | Notes |
+| ---------------------- | ----------- | ---------- | -------- | ----- |
+| 1 - Foundation         | Not Started | -          | -        | -     |
+| 2 - Campaign Agent     | Not Started | -          | -        | -     |
+| 3 - Creative Agent     | Not Started | -          | -        | -     |
+| 4 - Performance Agent  | Not Started | -          | -        | -     |
+| 5 - Market Intel       | Not Started | -          | -        | -     |
+| 6 - Orchestrator       | Not Started | -          | -        | -     |
+| 7 - Dashboard          | Not Started | -          | -        | -     |
+| 8 - Production Ready   | Not Started | -          | -        | -     |
+| 9 - Real-World Testing | Not Started | -          | -        | -     |
 
 **Status Legend:**
+
 - Not Started
 - In Progress
 - Blocked
@@ -642,12 +707,15 @@ Use this for weekly sprints:
 **Date:** [Date]
 
 **Yesterday:**
+
 - [What was accomplished]
 
 **Today:**
+
 - [What will be worked on]
 
 **Blockers:**
+
 - None / [List any blockers]
 
 ---
@@ -655,6 +723,7 @@ Use this for weekly sprints:
 ## Definition of Done
 
 A task is "done" when:
+
 - [ ] Code is written and reviewed
 - [ ] Tests are written and passing (>80% coverage)
 - [ ] Documentation is updated

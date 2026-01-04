@@ -11,6 +11,7 @@ This is a production-grade, multi-agent AI system for autonomous Facebook and Ti
 ## Code Quality Standards
 
 ### TypeScript Standards
+
 - **Strict mode enabled** - No `any` types without explicit justification
 - **Explicit return types** for all functions
 - **Interface over type** for object shapes
@@ -40,12 +41,14 @@ async function createCampaign(params: any): Promise<any> {
 ```
 
 ### File Organization
+
 - **One component/agent per file**
 - **Co-locate tests** with source files when practical
 - **Barrel exports** for clean imports (`index.ts`)
 - **Separate concerns** - no god files >500 lines
 
 ### Naming Conventions
+
 - **PascalCase** - Components, Classes, Types, Interfaces
 - **camelCase** - Functions, variables, methods
 - **SCREAMING_SNAKE_CASE** - Constants
@@ -53,9 +56,9 @@ async function createCampaign(params: any): Promise<any> {
 
 ```typescript
 // Files
-market-intelligence-agent.ts
-use-campaign-data.tsx
-campaign-card.tsx
+market - intelligence - agent.ts;
+use - campaign - data.tsx;
+campaign - card.tsx;
 
 // Code
 const MAX_DAILY_BUDGET = 5000;
@@ -65,12 +68,13 @@ function createCampaign() {}
 ```
 
 ### Comments & Documentation
+
 - **JSDoc for public APIs** - especially agent tools and utilities
 - **Inline comments for complex logic** - why, not what
 - **TODO comments** must include issue number or name
 - **No commented-out code** - use git history
 
-```typescript
+````typescript
 /**
  * Scrapes Meta Ad Library for competitor ads in a specific category.
  *
@@ -93,13 +97,14 @@ function createCampaign() {}
 export async function scrapeMetaAdLibrary(params: ScrapeParams): Promise<Ad[]> {
   // Implementation
 }
-```
+````
 
 ---
 
 ## Agent Development Guidelines
 
 ### Agent Structure Pattern
+
 All agents follow this structure:
 
 ```typescript
@@ -115,7 +120,7 @@ export class MyAgent extends BaseAgent {
       temperature: 0.7,
       maxTokens: 4000,
       systemPrompt: SYSTEM_PROMPT,
-      tools: [tool1, tool2]
+      tools: [tool1, tool2],
     });
   }
 
@@ -134,6 +139,7 @@ export class MyAgent extends BaseAgent {
 ```
 
 ### Tool Development Pattern
+
 ```typescript
 export const myTool: Tool = {
   name: 'tool_name',
@@ -143,10 +149,10 @@ export const myTool: Tool = {
     properties: {
       param1: {
         type: 'string',
-        description: 'What this parameter does'
-      }
+        description: 'What this parameter does',
+      },
     },
-    required: ['param1']
+    required: ['param1'],
   },
   execute: async (input) => {
     // Input validation
@@ -163,13 +169,14 @@ export const myTool: Tool = {
     // Return structured output
     return {
       success: true,
-      data: result.data
+      data: result.data,
     };
-  }
+  },
 };
 ```
 
 ### Error Handling in Agents
+
 ```typescript
 // Always wrap agent execution in try-catch
 async execute(input: any): Promise<AgentResponse> {
@@ -219,6 +226,7 @@ async execute(input: any): Promise<AgentResponse> {
 ## Database Guidelines
 
 ### Query Patterns
+
 ```typescript
 // ✅ Use typed queries
 import { Database } from '@/types/database';
@@ -239,13 +247,14 @@ if (error) throw new DatabaseError('Failed to fetch campaigns', { cause: error }
 // ✅ Use transactions for related operations
 const { data, error } = await supabase.rpc('create_campaign_with_adsets', {
   campaign_data: campaignData,
-  adset_data: adSetData
+  adset_data: adSetData,
 });
 
 // ❌ Don't use raw SQL unless absolutely necessary
 ```
 
 ### RLS Policies
+
 - **Never bypass RLS** in application code
 - **Test RLS policies** with different user contexts
 - **Document policy logic** in migration files
@@ -272,12 +281,10 @@ COMMENT ON POLICY "Users can view own org campaigns" ON campaigns IS
 ## API Integration Guidelines
 
 ### External API Calls
+
 ```typescript
 // ✅ Proper error handling and retry logic
-async function callExternalAPI<T>(
-  apiCall: () => Promise<T>,
-  retries = 3
-): Promise<T> {
+async function callExternalAPI<T>(apiCall: () => Promise<T>, retries = 3): Promise<T> {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       return await apiCall();
@@ -296,19 +303,18 @@ async function callExternalAPI<T>(
 }
 
 // Usage
-const result = await callExternalAPI(() =>
-  metaAPI.createCampaign(params)
-);
+const result = await callExternalAPI(() => metaAPI.createCampaign(params));
 ```
 
 ### Rate Limiting
+
 ```typescript
 // ✅ Implement rate limiting for external APIs
 import { RateLimiter } from 'limiter';
 
 const metaAPILimiter = new RateLimiter({
   tokensPerInterval: 200,
-  interval: 'hour'
+  interval: 'hour',
 });
 
 async function makeMetaAPICall(fn: () => Promise<any>) {
@@ -322,6 +328,7 @@ async function makeMetaAPICall(fn: () => Promise<any>) {
 ## Testing Guidelines
 
 ### Unit Tests
+
 ```typescript
 // tests/unit/agents/market-intelligence.test.ts
 
@@ -369,6 +376,7 @@ describe('MarketIntelligenceAgent', () => {
 ```
 
 ### Integration Tests
+
 ```typescript
 // tests/integration/campaign-flow.test.ts
 
@@ -383,7 +391,7 @@ describe('Campaign Creation Flow', () => {
     const result = await orchestrator.launchNewProductCampaign({
       productId: product.id,
       budget: 100,
-      targeting: testTargeting
+      targeting: testTargeting,
     });
 
     // Verify end state
@@ -396,6 +404,7 @@ describe('Campaign Creation Flow', () => {
 ```
 
 ### Test Data Management
+
 ```typescript
 // tests/helpers/factories.ts
 
@@ -405,7 +414,7 @@ export function createTestProduct(overrides = {}) {
     name: 'Test Product',
     category: 'fitness',
     price: 49.99,
-    ...overrides
+    ...overrides,
   };
 }
 
@@ -414,7 +423,7 @@ export function createTestCampaign(overrides = {}) {
     name: 'Test Campaign',
     daily_budget: 50,
     status: 'active',
-    ...overrides
+    ...overrides,
   };
 }
 ```
@@ -424,6 +433,7 @@ export function createTestCampaign(overrides = {}) {
 ## Security Best Practices
 
 ### Input Validation
+
 ```typescript
 // ✅ Always validate and sanitize inputs
 import { z } from 'zod';
@@ -434,8 +444,8 @@ const CreateCampaignSchema = z.object({
   targeting: z.object({
     age_min: z.number().min(18).max(65),
     age_max: z.number().min(18).max(65),
-    countries: z.array(z.string().length(2))
-  })
+    countries: z.array(z.string().length(2)),
+  }),
 });
 
 export async function createCampaign(input: unknown) {
@@ -448,6 +458,7 @@ export async function createCampaign(input: unknown) {
 ```
 
 ### Secrets Management
+
 ```typescript
 // ✅ Never log secrets
 function logAPICall(url: string, headers: Record<string, string>) {
@@ -464,12 +475,10 @@ function logAPICall(url: string, headers: Record<string, string>) {
 ```
 
 ### SQL Injection Prevention
+
 ```typescript
 // ✅ Use parameterized queries (Supabase does this automatically)
-const { data } = await supabase
-  .from('campaigns')
-  .select('*')
-  .eq('name', userInput); // Safe - parameterized
+const { data } = await supabase.from('campaigns').select('*').eq('name', userInput); // Safe - parameterized
 
 // ❌ Never build raw SQL with string concatenation
 const query = `SELECT * FROM campaigns WHERE name = '${userInput}'`; // DANGEROUS
@@ -480,6 +489,7 @@ const query = `SELECT * FROM campaigns WHERE name = '${userInput}'`; // DANGEROU
 ## Performance Optimization
 
 ### Database Optimization
+
 ```typescript
 // ✅ Use proper indexes
 CREATE INDEX idx_campaigns_org_status ON campaigns(organization_id, status);
@@ -499,6 +509,7 @@ const { data } = await supabase
 ```
 
 ### React Performance
+
 ```typescript
 // ✅ Use React.memo for expensive components
 export const CampaignCard = React.memo(({ campaign, metrics }: Props) => {
@@ -511,27 +522,30 @@ const sortedCampaigns = useMemo(() => {
 }, [campaigns]);
 
 // ✅ Use useCallback for callbacks passed to children
-const handlePause = useCallback((id: string) => {
-  pauseCampaign(id);
-}, [pauseCampaign]);
+const handlePause = useCallback(
+  (id: string) => {
+    pauseCampaign(id);
+  },
+  [pauseCampaign]
+);
 ```
 
 ### API Call Optimization
+
 ```typescript
 // ✅ Batch API calls when possible
-const results = await Promise.all([
-  getMetrics(id1),
-  getMetrics(id2),
-  getMetrics(id3)
-]);
+const results = await Promise.all([getMetrics(id1), getMetrics(id2), getMetrics(id3)]);
 
 // ✅ Better: Use batch endpoint if available
 const results = await getBatchMetrics([id1, id2, id3]);
 
 // ✅ Cache frequent requests
-const getCampaignsCached = cache(async (orgId: string) => {
-  return await db.getCampaigns(orgId);
-}, { ttl: 60 }); // 60 second cache
+const getCampaignsCached = cache(
+  async (orgId: string) => {
+    return await db.getCampaigns(orgId);
+  },
+  { ttl: 60 }
+); // 60 second cache
 ```
 
 ---
@@ -539,6 +553,7 @@ const getCampaignsCached = cache(async (orgId: string) => {
 ## Git Commit Guidelines
 
 ### Commit Message Format
+
 ```
 type(scope): brief description
 
@@ -548,6 +563,7 @@ Fixes #123
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only
@@ -558,6 +574,7 @@ Fixes #123
 - `chore`: Maintenance (deps, config)
 
 **Examples:**
+
 ```bash
 feat(agents): add market intelligence agent with scraping
 fix(campaign-execution): prevent budget overrun on Meta API
@@ -568,6 +585,7 @@ chore(deps): update Next.js to 14.2.0
 ```
 
 ### Branch Naming
+
 ```
 feature/agent-market-intelligence
 fix/budget-calculation-error
@@ -576,22 +594,27 @@ docs/api-integration-guide
 ```
 
 ### Pull Request Template
+
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] New feature
 - [ ] Bug fix
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Unit tests pass
 - [ ] Integration tests pass
 - [ ] Manually tested
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Comments added for complex logic
@@ -604,6 +627,7 @@ Brief description of changes
 ## Deployment Checklist
 
 ### Pre-Deployment
+
 - [ ] All tests passing
 - [ ] No TypeScript errors
 - [ ] Environment variables configured
@@ -612,6 +636,7 @@ Brief description of changes
 - [ ] Rate limits configured
 
 ### Post-Deployment
+
 - [ ] Health check endpoint responding
 - [ ] Cron jobs running
 - [ ] Error tracking working (Sentry)
@@ -619,6 +644,7 @@ Brief description of changes
 - [ ] Monitor for 24 hours
 
 ### Rollback Plan
+
 - [ ] Previous deployment tag known
 - [ ] Database rollback script ready
 - [ ] API keys preserved
@@ -629,6 +655,7 @@ Brief description of changes
 ## Common Pitfalls to Avoid
 
 ### Agent Development
+
 ❌ **Don't:** Create agents without clear system prompts
 ✅ **Do:** Write detailed system prompts that define behavior
 
@@ -639,6 +666,7 @@ Brief description of changes
 ✅ **Do:** Keep agents focused on single responsibilities
 
 ### API Integration
+
 ❌ **Don't:** Assume external APIs are always available
 ✅ **Do:** Implement timeouts, retries, and fallbacks
 
@@ -649,6 +677,7 @@ Brief description of changes
 ✅ **Do:** Implement rate limiting from day one
 
 ### Database
+
 ❌ **Don't:** Fetch entire tables into memory
 ✅ **Do:** Use pagination and proper indexing
 
@@ -659,6 +688,7 @@ Brief description of changes
 ✅ **Do:** Encrypt sensitive fields
 
 ### React/Frontend
+
 ❌ **Don't:** Fetch data in useEffect without cleanup
 ✅ **Do:** Use SWR or React Query for data fetching
 
@@ -680,6 +710,7 @@ When Claude Code encounters something ambiguous:
 4. **Ask Sergio** if truly unclear
 
 When asking for clarification:
+
 - State what you're trying to do
 - Explain the ambiguity
 - Suggest 2-3 possible approaches

@@ -5,6 +5,7 @@
 Build a production-ready, multi-agent AI system that autonomously manages Facebook and TikTok advertising campaigns with integrated creative generation using Veo 3/Sora 2 video prompts.
 
 **Core Value Proposition:**
+
 - Autonomous ad campaign management (targeting, bidding, optimization)
 - AI-generated video creative concepts (Veo 3/Sora 2 prompts)
 - Competitive intelligence via web scraping
@@ -12,6 +13,7 @@ Build a production-ready, multi-agent AI system that autonomously manages Facebo
 - Full-stack alternative to traditional ad agencies
 
 **Target Users:**
+
 - Internal use: Sergio + Arinze managing agency client campaigns
 - Future: SaaS product for other agencies/businesses
 
@@ -20,6 +22,7 @@ Build a production-ready, multi-agent AI system that autonomously manages Facebo
 ## Tech Stack
 
 ### Frontend
+
 - **Framework:** Next.js 14+ (App Router)
 - **Language:** TypeScript (strict mode)
 - **UI Library:** shadcn/ui + Tailwind CSS
@@ -28,6 +31,7 @@ Build a production-ready, multi-agent AI system that autonomously manages Facebo
 - **Forms:** React Hook Form + Zod validation
 
 ### Backend
+
 - **API Routes:** Next.js API routes + Server Actions
 - **Database:** Supabase (PostgreSQL)
   - Row Level Security enabled
@@ -36,12 +40,14 @@ Build a production-ready, multi-agent AI system that autonomously manages Facebo
 - **File Storage:** Supabase Storage (for generated videos/assets)
 
 ### AI & Agent Layer
+
 - **Orchestration:** LangChain or custom TypeScript orchestrator
 - **LLM Provider:** Anthropic Claude API (Sonnet 4)
 - **Agent Pattern:** Tool-calling architecture
 - **Vector Store:** Supabase pgvector (for learning database)
 
 ### External APIs
+
 - **Meta Marketing API:** Campaign management, performance data
 - **TikTok Ads API:** Campaign management, performance data
 - **OpenAI Whisper API:** Video transcription
@@ -50,6 +56,7 @@ Build a production-ready, multi-agent AI system that autonomously manages Facebo
 - **Scrapfly/Apify:** Web scraping for competitor intelligence
 
 ### DevOps
+
 - **Hosting:** Vercel (frontend + API routes)
 - **Database:** Supabase Cloud
 - **Background Jobs:** Vercel Cron or Inngest
@@ -57,6 +64,7 @@ Build a production-ready, multi-agent AI system that autonomously manages Facebo
 - **Logging:** Custom logging to Supabase
 
 ### Development Tools
+
 - **Package Manager:** pnpm
 - **Code Quality:** ESLint + Prettier
 - **Git Hooks:** Husky + lint-staged
@@ -483,7 +491,7 @@ export interface Tool {
   name: string;
   description: string;
   input_schema: {
-    type: "object";
+    type: 'object';
     properties: Record<string, any>;
     required?: string[];
   };
@@ -523,41 +531,35 @@ export abstract class BaseAgent {
 
   constructor(config: AgentConfig) {
     this.client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY!
+      apiKey: process.env.ANTHROPIC_API_KEY!,
     });
     this.config = config;
   }
 
   abstract execute(input: any): Promise<AgentResponse>;
 
-  protected async callClaude(
-    messages: AgentMessage[],
-    tools?: Tool[]
-  ): Promise<any> {
+  protected async callClaude(messages: AgentMessage[], tools?: Tool[]): Promise<any> {
     const response = await this.client.messages.create({
       model: this.config.model,
       max_tokens: this.config.maxTokens,
       temperature: this.config.temperature,
       system: this.config.systemPrompt,
-      messages: messages.map(msg => ({
+      messages: messages.map((msg) => ({
         role: msg.role,
-        content: msg.content
+        content: msg.content,
       })),
-      tools: tools?.map(tool => ({
+      tools: tools?.map((tool) => ({
         name: tool.name,
         description: tool.description,
-        input_schema: tool.input_schema
-      }))
+        input_schema: tool.input_schema,
+      })),
     });
 
     return response;
   }
 
-  protected async executeTool(
-    toolName: string,
-    toolInput: any
-  ): Promise<any> {
-    const tool = this.config.tools.find(t => t.name === toolName);
+  protected async executeTool(toolName: string, toolInput: any): Promise<any> {
+    const tool = this.config.tools.find((t) => t.name === toolName);
     if (!tool) {
       throw new Error(`Tool ${toolName} not found`);
     }
@@ -639,8 +641,8 @@ export class MarketIntelligenceAgent extends BaseAgent {
         tools.transcribeVideo,
         tools.analyzeVisualElements,
         tools.getTrendingProducts,
-        tools.saveMarketInsight
-      ]
+        tools.saveMarketInsight,
+      ],
     };
     super(config);
   }
@@ -667,15 +669,12 @@ export class MarketIntelligenceAgent extends BaseAgent {
 
       for (const content of response.content) {
         if (content.type === 'tool_use') {
-          const toolResult = await this.executeTool(
-            content.name,
-            content.input
-          );
+          const toolResult = await this.executeTool(content.name, content.input);
 
           toolCalls.push({
             tool: content.name,
             input: content.input,
-            output: toolResult
+            output: toolResult,
           });
 
           // Continue conversation with tool result
@@ -683,17 +682,20 @@ export class MarketIntelligenceAgent extends BaseAgent {
             [
               { role: 'user', content: userMessage },
               { role: 'assistant', content: JSON.stringify(response.content) },
-              { role: 'user', content: JSON.stringify({
-                type: 'tool_result',
-                tool_use_id: content.id,
-                content: JSON.stringify(toolResult)
-              })}
+              {
+                role: 'user',
+                content: JSON.stringify({
+                  type: 'tool_result',
+                  tool_use_id: content.id,
+                  content: JSON.stringify(toolResult),
+                }),
+              },
             ],
             this.config.tools
           );
 
           if (followUpResponse.stop_reason === 'end_turn') {
-            finalOutput = followUpResponse.content.find(c => c.type === 'text')?.text;
+            finalOutput = followUpResponse.content.find((c) => c.type === 'text')?.text;
           }
         }
       }
@@ -711,11 +713,10 @@ export class MarketIntelligenceAgent extends BaseAgent {
 
       return {
         success: true,
-        output: finalOutput || response.content.find(c => c.type === 'text')?.text,
+        output: finalOutput || response.content.find((c) => c.type === 'text')?.text,
         toolCalls,
-        reasoning: 'Market intelligence research completed'
+        reasoning: 'Market intelligence research completed',
       };
-
     } catch (error) {
       const executionTime = Date.now() - startTime;
 
@@ -731,7 +732,7 @@ export class MarketIntelligenceAgent extends BaseAgent {
       return {
         success: false,
         output: null,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -791,37 +792,38 @@ import { saveToDatabase } from '@/lib/db/queries';
 
 export const scrapeMetaAdLibrary: Tool = {
   name: 'scrape_meta_ad_library',
-  description: 'Scrape Meta Ad Library for competitor ads in a specific category or from a specific advertiser. Returns ad URLs, copy, and metadata.',
+  description:
+    'Scrape Meta Ad Library for competitor ads in a specific category or from a specific advertiser. Returns ad URLs, copy, and metadata.',
   input_schema: {
     type: 'object',
     properties: {
       searchTerm: {
         type: 'string',
-        description: 'Product category or advertiser name to search for'
+        description: 'Product category or advertiser name to search for',
       },
       country: {
         type: 'string',
         description: 'Country code (e.g., "US", "ES", "GB")',
-        default: 'US'
+        default: 'US',
       },
       mediaType: {
         type: 'string',
         enum: ['all', 'video', 'image'],
         description: 'Filter by media type',
-        default: 'all'
+        default: 'all',
       },
       activeStatus: {
         type: 'string',
         enum: ['active', 'inactive', 'all'],
-        default: 'active'
+        default: 'active',
       },
       maxResults: {
         type: 'integer',
         description: 'Maximum number of ads to return',
-        default: 50
-      }
+        default: 50,
+      },
     },
-    required: ['searchTerm']
+    required: ['searchTerm'],
   },
   execute: async (input) => {
     // Implementation using Scrapfly API
@@ -830,7 +832,7 @@ export const scrapeMetaAdLibrary: Tool = {
       country: input.country,
       mediaType: input.mediaType,
       activeStatus: input.activeStatus,
-      maxResults: input.maxResults
+      maxResults: input.maxResults,
     });
 
     // Save to market_intelligence table
@@ -843,13 +845,13 @@ export const scrapeMetaAdLibrary: Tool = {
         video_url: ad.videoUrl,
         caption: ad.caption,
         running_since: ad.startDate,
-        scraped_at: new Date()
+        scraped_at: new Date(),
       });
     }
 
     return {
       totalResults: results.length,
-      ads: results.map(ad => ({
+      ads: results.map((ad) => ({
         id: ad.id,
         advertiser: ad.advertiserName,
         url: ad.url,
@@ -857,37 +859,38 @@ export const scrapeMetaAdLibrary: Tool = {
         mediaType: ad.mediaType,
         videoUrl: ad.videoUrl,
         runningSince: ad.startDate,
-        daysActive: ad.daysActive
-      }))
+        daysActive: ad.daysActive,
+      })),
     };
-  }
+  },
 };
 
 export const scrapeTikTokAds: Tool = {
   name: 'scrape_tiktok_ads',
-  description: 'Scrape TikTok Creative Center for trending ads. Note: TikTok has official API with public data, so this is legal.',
+  description:
+    'Scrape TikTok Creative Center for trending ads. Note: TikTok has official API with public data, so this is legal.',
   input_schema: {
     type: 'object',
     properties: {
       industry: {
         type: 'string',
-        description: 'Industry/category to search'
+        description: 'Industry/category to search',
       },
       country: {
         type: 'string',
-        default: 'US'
+        default: 'US',
       },
       objective: {
         type: 'string',
         enum: ['all', 'conversions', 'traffic', 'app_installs'],
-        default: 'all'
+        default: 'all',
       },
       maxResults: {
         type: 'integer',
-        default: 50
-      }
+        default: 50,
+      },
     },
-    required: ['industry']
+    required: ['industry'],
   },
   execute: async (input) => {
     // Implementation using TikTok Creative Center API (official, public)
@@ -895,9 +898,9 @@ export const scrapeTikTokAds: Tool = {
 
     return {
       totalResults: results.length,
-      ads: results
+      ads: results,
     };
-  }
+  },
 };
 
 export const transcribeVideo: Tool = {
@@ -908,10 +911,10 @@ export const transcribeVideo: Tool = {
     properties: {
       videoUrl: {
         type: 'string',
-        description: 'URL of the video to transcribe'
-      }
+        description: 'URL of the video to transcribe',
+      },
     },
-    required: ['videoUrl']
+    required: ['videoUrl'],
   },
   execute: async (input) => {
     // 1. Download video
@@ -929,9 +932,9 @@ export const transcribeVideo: Tool = {
     return {
       transcript: transcript.text,
       language: transcript.language,
-      confidence: transcript.confidence
+      confidence: transcript.confidence,
     };
-  }
+  },
 };
 
 export const analyzeVisualElements: Tool = {
@@ -942,15 +945,15 @@ export const analyzeVisualElements: Tool = {
     properties: {
       imageUrl: {
         type: 'string',
-        description: 'URL of image or video thumbnail to analyze'
+        description: 'URL of image or video thumbnail to analyze',
       },
       analysisType: {
         type: 'string',
         enum: ['composition', 'colors', 'text_overlays', 'people', 'products', 'emotions'],
-        description: 'What aspect to focus analysis on'
-      }
+        description: 'What aspect to focus analysis on',
+      },
     },
-    required: ['imageUrl']
+    required: ['imageUrl'],
   },
   execute: async (input) => {
     const analysis = await analyzeImage(input.imageUrl, input.analysisType);
@@ -958,9 +961,9 @@ export const analyzeVisualElements: Tool = {
     return {
       analysis: analysis.description,
       elements: analysis.elements,
-      suggestions: analysis.suggestions
+      suggestions: analysis.suggestions,
     };
-  }
+  },
 };
 
 export const getTrendingProducts: Tool = {
@@ -971,23 +974,23 @@ export const getTrendingProducts: Tool = {
     properties: {
       category: {
         type: 'string',
-        description: 'Product category'
+        description: 'Product category',
       },
       timeRange: {
         type: 'string',
         enum: ['24h', '7d', '30d'],
-        default: '7d'
-      }
-    }
+        default: '7d',
+      },
+    },
   },
   execute: async (input) => {
     // Integrate with Ecomhunt, FindNiche, or similar APIs
     // For MVP, can be a placeholder returning mock data
     return {
       products: [],
-      message: 'Trending products API integration pending'
+      message: 'Trending products API integration pending',
     };
-  }
+  },
 };
 
 export const saveMarketInsight: Tool = {
@@ -998,26 +1001,26 @@ export const saveMarketInsight: Tool = {
     properties: {
       category: {
         type: 'string',
-        description: 'Type of insight (trend, pattern, opportunity, etc.)'
+        description: 'Type of insight (trend, pattern, opportunity, etc.)',
       },
       title: {
         type: 'string',
-        description: 'Short title for the insight'
+        description: 'Short title for the insight',
       },
       description: {
         type: 'string',
-        description: 'Detailed description of the insight'
+        description: 'Detailed description of the insight',
       },
       evidence: {
         type: 'object',
-        description: 'Supporting data, examples, URLs'
+        description: 'Supporting data, examples, URLs',
       },
       confidence: {
         type: 'number',
-        description: 'Confidence score 0-1'
-      }
+        description: 'Confidence score 0-1',
+      },
     },
-    required: ['category', 'title', 'description', 'evidence']
+    required: ['category', 'title', 'description', 'evidence'],
   },
   execute: async (input) => {
     const insight = await saveToDatabase('learnings', {
@@ -1027,14 +1030,14 @@ export const saveMarketInsight: Tool = {
       description: input.description,
       evidence: input.evidence,
       confidence_score: input.confidence || 0.7,
-      created_by: 'market_intelligence_agent'
+      created_by: 'market_intelligence_agent',
     });
 
     return {
       success: true,
-      insightId: insight.id
+      insightId: insight.id,
     };
-  }
+  },
 };
 ```
 
@@ -1097,8 +1100,8 @@ export class PerformanceTestingAgent extends BaseAgent {
         tools.analyzeTrends,
         tools.designABTest,
         tools.checkTestSignificance,
-        tools.saveLearning
-      ]
+        tools.saveLearning,
+      ],
     };
     super(config);
   }
@@ -1175,8 +1178,8 @@ export class CreativeAgent extends BaseAgent {
         tools.generateVideoPrompt,
         tools.generateAdCopy,
         tools.validateConcept,
-        tools.saveCreativeConcept
-      ]
+        tools.saveCreativeConcept,
+      ],
     };
     super(config);
   }
@@ -1257,8 +1260,8 @@ export class CampaignExecutionAgent extends BaseAgent {
         tools.getPerformanceData,
         tools.createLookalikeAudience,
         tools.checkSpendLimits,
-        tools.requestApproval
-      ]
+        tools.requestApproval,
+      ],
     };
     super(config);
   }
@@ -1303,13 +1306,13 @@ export class OrchestratorAgent {
     // 1. Market research
     const marketInsights = await this.marketIntel.execute({
       task: 'research_category',
-      productCategory: input.productCategory
+      productCategory: input.productCategory,
     });
 
     // 2. Get performance learnings
     const performanceLearnings = await this.performance.execute({
       task: 'get_similar_product_learnings',
-      productCategory: input.productCategory
+      productCategory: input.productCategory,
     });
 
     // 3. Generate creative concepts
@@ -1317,17 +1320,17 @@ export class OrchestratorAgent {
       productId: input.productId,
       briefing: `Create ad concepts using these insights: ${JSON.stringify({
         market: marketInsights,
-        performance: performanceLearnings
+        performance: performanceLearnings,
       })}`,
       numberOfVariations: 5,
       platform: 'meta',
-      videoLength: 30
+      videoLength: 30,
     });
 
     // 4. Request human approval
     const approval = await this.requestHumanApproval({
       type: 'creative_concepts',
-      concepts: creativeConcepts
+      concepts: creativeConcepts,
     });
 
     if (!approval.approved) {
@@ -1341,14 +1344,14 @@ export class OrchestratorAgent {
         productId: input.productId,
         budget: input.budget,
         targeting: input.targeting,
-        creativeIds: approval.selectedConcepts
-      }
+        creativeIds: approval.selectedConcepts,
+      },
     });
 
     return {
       success: true,
       campaignId: campaign.output.campaignId,
-      message: 'Campaign launched successfully'
+      message: 'Campaign launched successfully',
     };
   }
 
@@ -1360,13 +1363,13 @@ export class OrchestratorAgent {
       // 1. Get performance data
       const performance = await this.execution.execute({
         action: 'get_performance',
-        campaignIds: [campaign.id]
+        campaignIds: [campaign.id],
       });
 
       // 2. Analyze
       const analysis = await this.performance.execute({
         task: 'analyze_performance',
-        campaignIds: [campaign.id]
+        campaignIds: [campaign.id],
       });
 
       // 3. Execute optimizations
@@ -1375,13 +1378,13 @@ export class OrchestratorAgent {
           if (rec.autoExecute) {
             await this.execution.execute({
               action: 'optimize_campaign',
-              recommendation: rec
+              recommendation: rec,
             });
           } else {
             // Request approval for manual review
             await this.requestHumanApproval({
               type: 'optimization',
-              recommendation: rec
+              recommendation: rec,
             });
           }
         }
@@ -1409,6 +1412,7 @@ export class OrchestratorAgent {
 ### Meta Marketing API
 
 **Setup Requirements:**
+
 1. Facebook Business Manager account
 2. App created in developers.facebook.com
 3. Marketing API access granted
@@ -1436,150 +1440,146 @@ export class MetaAdsAPI {
 
   // Get ad account details
   async getAdAccount(accountId: string) {
-    const response = await axios.get(
-      `${META_API_BASE}/act_${accountId}`,
-      {
-        params: {
-          access_token: this.accessToken,
-          fields: 'account_id,name,currency,timezone_name,amount_spent,balance'
-        }
-      }
-    );
+    const response = await axios.get(`${META_API_BASE}/act_${accountId}`, {
+      params: {
+        access_token: this.accessToken,
+        fields: 'account_id,name,currency,timezone_name,amount_spent,balance',
+      },
+    });
     return response.data;
   }
 
   // Create campaign
-  async createCampaign(accountId: string, params: {
-    name: string;
-    objective: string; // 'OUTCOME_SALES', 'OUTCOME_TRAFFIC', etc.
-    status: 'PAUSED' | 'ACTIVE';
-    special_ad_categories?: string[];
-    daily_budget?: number;
-    lifetime_budget?: number;
-  }) {
-    const response = await axios.post(
-      `${META_API_BASE}/act_${accountId}/campaigns`,
-      {
-        access_token: this.accessToken,
-        ...params,
-        // Convert budget to cents
-        daily_budget: params.daily_budget ? params.daily_budget * 100 : undefined,
-        lifetime_budget: params.lifetime_budget ? params.lifetime_budget * 100 : undefined
-      }
-    );
+  async createCampaign(
+    accountId: string,
+    params: {
+      name: string;
+      objective: string; // 'OUTCOME_SALES', 'OUTCOME_TRAFFIC', etc.
+      status: 'PAUSED' | 'ACTIVE';
+      special_ad_categories?: string[];
+      daily_budget?: number;
+      lifetime_budget?: number;
+    }
+  ) {
+    const response = await axios.post(`${META_API_BASE}/act_${accountId}/campaigns`, {
+      access_token: this.accessToken,
+      ...params,
+      // Convert budget to cents
+      daily_budget: params.daily_budget ? params.daily_budget * 100 : undefined,
+      lifetime_budget: params.lifetime_budget ? params.lifetime_budget * 100 : undefined,
+    });
     return response.data;
   }
 
   // Create ad set
-  async createAdSet(accountId: string, params: {
-    campaign_id: string;
-    name: string;
-    optimization_goal: string;
-    billing_event: string;
-    bid_amount?: number;
-    daily_budget?: number;
-    targeting: any;
-    status: 'PAUSED' | 'ACTIVE';
-  }) {
-    const response = await axios.post(
-      `${META_API_BASE}/act_${accountId}/adsets`,
-      {
-        access_token: this.accessToken,
-        ...params,
-        daily_budget: params.daily_budget ? params.daily_budget * 100 : undefined
-      }
-    );
+  async createAdSet(
+    accountId: string,
+    params: {
+      campaign_id: string;
+      name: string;
+      optimization_goal: string;
+      billing_event: string;
+      bid_amount?: number;
+      daily_budget?: number;
+      targeting: any;
+      status: 'PAUSED' | 'ACTIVE';
+    }
+  ) {
+    const response = await axios.post(`${META_API_BASE}/act_${accountId}/adsets`, {
+      access_token: this.accessToken,
+      ...params,
+      daily_budget: params.daily_budget ? params.daily_budget * 100 : undefined,
+    });
     return response.data;
   }
 
   // Create ad creative
-  async createAdCreative(accountId: string, params: {
-    name: string;
-    object_story_spec?: any;
-    video_data?: any;
-    image_url?: string;
-  }) {
-    const response = await axios.post(
-      `${META_API_BASE}/act_${accountId}/adcreatives`,
-      {
-        access_token: this.accessToken,
-        ...params
-      }
-    );
+  async createAdCreative(
+    accountId: string,
+    params: {
+      name: string;
+      object_story_spec?: any;
+      video_data?: any;
+      image_url?: string;
+    }
+  ) {
+    const response = await axios.post(`${META_API_BASE}/act_${accountId}/adcreatives`, {
+      access_token: this.accessToken,
+      ...params,
+    });
     return response.data;
   }
 
   // Create ad
-  async createAd(accountId: string, params: {
-    ad_set_id: string;
-    name: string;
-    creative_id: string;
-    status: 'PAUSED' | 'ACTIVE';
-  }) {
-    const response = await axios.post(
-      `${META_API_BASE}/act_${accountId}/ads`,
-      {
-        access_token: this.accessToken,
-        ...params
-      }
-    );
+  async createAd(
+    accountId: string,
+    params: {
+      ad_set_id: string;
+      name: string;
+      creative_id: string;
+      status: 'PAUSED' | 'ACTIVE';
+    }
+  ) {
+    const response = await axios.post(`${META_API_BASE}/act_${accountId}/ads`, {
+      access_token: this.accessToken,
+      ...params,
+    });
     return response.data;
   }
 
   // Get insights (performance data)
-  async getInsights(objectId: string, params: {
-    level: 'campaign' | 'adset' | 'ad';
-    date_preset?: string; // 'today', 'yesterday', 'last_7d', 'last_30d'
-    time_range?: { since: string; until: string }; // YYYY-MM-DD
-    fields: string[]; // Metrics to fetch
-  }) {
-    const response = await axios.get(
-      `${META_API_BASE}/${objectId}/insights`,
-      {
-        params: {
-          access_token: this.accessToken,
-          level: params.level,
-          date_preset: params.date_preset,
-          time_range: params.time_range ? JSON.stringify(params.time_range) : undefined,
-          fields: params.fields.join(',')
-        }
-      }
-    );
+  async getInsights(
+    objectId: string,
+    params: {
+      level: 'campaign' | 'adset' | 'ad';
+      date_preset?: string; // 'today', 'yesterday', 'last_7d', 'last_30d'
+      time_range?: { since: string; until: string }; // YYYY-MM-DD
+      fields: string[]; // Metrics to fetch
+    }
+  ) {
+    const response = await axios.get(`${META_API_BASE}/${objectId}/insights`, {
+      params: {
+        access_token: this.accessToken,
+        level: params.level,
+        date_preset: params.date_preset,
+        time_range: params.time_range ? JSON.stringify(params.time_range) : undefined,
+        fields: params.fields.join(','),
+      },
+    });
     return response.data;
   }
 
   // Update campaign (pause, change budget, etc.)
-  async updateCampaign(campaignId: string, updates: {
-    status?: 'PAUSED' | 'ACTIVE';
-    daily_budget?: number;
-    lifetime_budget?: number;
-    name?: string;
-  }) {
-    const response = await axios.post(
-      `${META_API_BASE}/${campaignId}`,
-      {
-        access_token: this.accessToken,
-        ...updates,
-        daily_budget: updates.daily_budget ? updates.daily_budget * 100 : undefined,
-        lifetime_budget: updates.lifetime_budget ? updates.lifetime_budget * 100 : undefined
-      }
-    );
+  async updateCampaign(
+    campaignId: string,
+    updates: {
+      status?: 'PAUSED' | 'ACTIVE';
+      daily_budget?: number;
+      lifetime_budget?: number;
+      name?: string;
+    }
+  ) {
+    const response = await axios.post(`${META_API_BASE}/${campaignId}`, {
+      access_token: this.accessToken,
+      ...updates,
+      daily_budget: updates.daily_budget ? updates.daily_budget * 100 : undefined,
+      lifetime_budget: updates.lifetime_budget ? updates.lifetime_budget * 100 : undefined,
+    });
     return response.data;
   }
 
   // Batch operations (more efficient)
-  async batchRequest(requests: Array<{
-    method: 'GET' | 'POST' | 'DELETE';
-    relative_url: string;
-    body?: string;
-  }>) {
-    const response = await axios.post(
-      `${META_API_BASE}`,
-      {
-        access_token: this.accessToken,
-        batch: requests
-      }
-    );
+  async batchRequest(
+    requests: Array<{
+      method: 'GET' | 'POST' | 'DELETE';
+      relative_url: string;
+      body?: string;
+    }>
+  ) {
+    const response = await axios.post(`${META_API_BASE}`, {
+      access_token: this.accessToken,
+      batch: requests,
+    });
     return response.data;
   }
 }
@@ -1601,7 +1601,7 @@ export const AVAILABLE_METRICS = [
   'video_p50_watched_actions',
   'video_p75_watched_actions',
   'video_p100_watched_actions',
-  'video_avg_time_watched_actions'
+  'video_avg_time_watched_actions',
 ];
 ```
 
@@ -1636,8 +1636,8 @@ export async function scrapeMetaAds(params: {
       render_js: true, // Meta Ad Library requires JS rendering
       proxy_pool: 'public_residential_pool', // Use residential proxies
       country: params.country,
-      asp: true // Anti-scraping protection
-    }
+      asp: true, // Anti-scraping protection
+    },
   });
 
   // Parse HTML and extract ad data
@@ -1661,6 +1661,7 @@ function parseMetaAdLibraryHTML(html: string): any[] {
 ### Key Pages/Views
 
 **1. Dashboard (Home)**
+
 - Active campaigns overview
 - Performance summary (spend, ROAS, conversions today)
 - Pending approvals
@@ -1668,12 +1669,14 @@ function parseMetaAdLibraryHTML(html: string): any[] {
 - Alerts/notifications
 
 **2. Campaigns Page**
+
 - List of all campaigns (with filters)
 - Campaign performance table
 - Quick actions (pause, duplicate, edit)
 - Drill-down to ad sets and ads
 
 **3. Creatives Page**
+
 - Creative concept library
 - Generate new concepts button
 - Status: draft, approved, active, archived
@@ -1681,12 +1684,14 @@ function parseMetaAdLibraryHTML(html: string): any[] {
 - Video preview
 
 **4. Insights Page**
+
 - Market intelligence findings
 - Performance learnings
 - Trending products/categories
 - Competitor analysis
 
 **5. Settings**
+
 - Ad account connections
 - Budget limits and safety rules
 - Approval workflows
@@ -1794,14 +1799,17 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      result
+      result,
     });
   } catch (error) {
     console.error('Daily optimization failed:', error);
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 }
+    );
   }
 }
 ```
@@ -1892,8 +1900,8 @@ describe('MarketIntelligenceAgent', () => {
         advertiser: 'Test Brand',
         url: 'https://...',
         caption: 'Test ad',
-        videoUrl: 'https://...'
-      }
+        videoUrl: 'https://...',
+      },
     ];
 
     vi.mocked(scrapfly.scrapeMetaAds).mockResolvedValue(mockAds);
@@ -1901,7 +1909,7 @@ describe('MarketIntelligenceAgent', () => {
     const agent = new MarketIntelligenceAgent();
     const result = await agent.execute({
       task: 'research_category',
-      productCategory: 'fitness'
+      productCategory: 'fitness',
     });
 
     expect(result.success).toBe(true);
@@ -1909,14 +1917,12 @@ describe('MarketIntelligenceAgent', () => {
   });
 
   it('should handle scraping errors gracefully', async () => {
-    vi.mocked(scrapfly.scrapeMetaAds).mockRejectedValue(
-      new Error('Rate limited')
-    );
+    vi.mocked(scrapfly.scrapeMetaAds).mockRejectedValue(new Error('Rate limited'));
 
     const agent = new MarketIntelligenceAgent();
     const result = await agent.execute({
       task: 'research_category',
-      productCategory: 'fitness'
+      productCategory: 'fitness',
     });
 
     expect(result.success).toBe(false);
@@ -1945,8 +1951,8 @@ describe('Campaign Creation Flow', () => {
       targeting: {
         countries: ['US'],
         age_min: 25,
-        age_max: 45
-      }
+        age_max: 45,
+      },
     });
 
     expect(result.success).toBe(true);
@@ -2158,7 +2164,7 @@ export async function logAgentActivity(data: {
     success: data.success,
     error: data.error,
     execution_time_ms: data.executionTimeMs,
-    organization_id: data.organizationId
+    organization_id: data.organizationId,
   });
 
   // Also send to external monitoring if configured
@@ -2181,6 +2187,7 @@ export async function logError(error: Error, context: any) {
 ## Success Criteria
 
 **Phase 1 Complete When:**
+
 - [ ] User can connect Meta ad account
 - [ ] Campaign Manager agent can create campaigns
 - [ ] Creative agent can generate Veo 3/Sora 2 prompts
@@ -2188,18 +2195,21 @@ export async function logError(error: Error, context: any) {
 - [ ] Basic performance metrics tracked
 
 **Phase 2 Complete When:**
+
 - [ ] Performance agent analyzes campaigns and makes recommendations
 - [ ] Daily optimization runs automatically
 - [ ] Learning database captures patterns
 - [ ] Approval workflow functional
 
 **Phase 3 Complete When:**
+
 - [ ] Market Intelligence agent scrapes competitors
 - [ ] Creative agent uses market insights
 - [ ] Full agent orchestration working
 - [ ] A/B test design and tracking operational
 
 **Production Ready When:**
+
 - [ ] All agents working reliably
 - [ ] 95%+ uptime for 2 weeks
 - [ ] Successfully managing €2000+ in ad spend
@@ -2225,11 +2235,13 @@ export async function logError(error: Error, context: any) {
 ## Budget Estimates
 
 **Development:**
+
 - Claude Code time: 6-8 weeks (your review time: ~15-20 hours)
 - Testing & debugging: 1-2 weeks
 - **Total: 8-10 weeks**
 
 **Operational Costs (Monthly):**
+
 - Supabase: €25-50 (Pro plan)
 - Vercel: €20-80 (depends on usage)
 - Anthropic API: €100-300 (depends on agent usage)
@@ -2238,6 +2250,7 @@ export async function logError(error: Error, context: any) {
 - **Total: €245-630/month**
 
 **Testing Budget:**
+
 - Phase 1: €500
 - Phase 2: €1,000
 - Phase 3: €1,000
@@ -2277,6 +2290,7 @@ export async function logError(error: Error, context: any) {
 ## Final Notes
 
 This is a **production-grade specification**. Every component is designed to be:
+
 - Scalable (can handle growth)
 - Maintainable (clean code, good structure)
 - Testable (unit, integration, e2e tests)
@@ -2286,6 +2300,7 @@ This is a **production-grade specification**. Every component is designed to be:
 **This is not a prototype.** This is a system you can build a business on.
 
 Claude Code will scaffold all of this and provide working implementations. Your job is to:
+
 1. Review code quality
 2. Test functionality
 3. Provide domain expertise feedback
